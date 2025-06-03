@@ -20,7 +20,7 @@ typedef struct {
 int nCounts, nTransactions, nThreads;
 Count *counts;
 Transaction *transactions;
-pthread_mutex_t *account_mutexes;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void *func_hilo(void *arg);
 void read_file(const char *filename);
@@ -29,7 +29,6 @@ int findAccount(int id);
 
 int main(int argc, char *argv[]) {
   struct timeval start, end;
-
   if (argc < 3) {
     fprintf(stderr, "Uso: %s <archivo> <n_hilos>\n", argv[0]);
     return EXIT_FAILURE;
@@ -39,13 +38,10 @@ int main(int argc, char *argv[]) {
   nThreads = atoi(argv[2]);
 
   read_file(filename);
-  gettimeofday(&start, NULL);
   // print_balance();
+  gettimeofday(&start, NULL);
 
-  account_mutexes = malloc(sizeof(pthread_mutex_t) * nCounts);
-  for (int i = 0; i < nCounts; i++) {
-    pthread_mutex_init(&account_mutexes[i], NULL);
-  }
+  pthread_mutex_init(&mutex, NULL);
 
   pthread_t *threads = malloc(sizeof(pthread_t) * nThreads);
   for (int i = 0; i < nThreads; i++) {
@@ -60,10 +56,7 @@ int main(int argc, char *argv[]) {
 
   // print_balance();
 
-  for (int i = 0; i < nCounts; i++) {
-    pthread_mutex_destroy(&account_mutexes[i]);
-  }
-  free(account_mutexes);
+  pthread_mutex_destroy(&mutex);
   free(threads);
   free(counts);
   free(transactions);
@@ -89,12 +82,12 @@ void *func_hilo(void *arg) {
     if (src == -1)
       continue;
 
-    pthread_mutex_lock(&account_mutexes[src]);
+    pthread_mutex_lock(&mutex);
     if (tx.type == DEP)
       counts[src].balance += tx.amount;
     else
       counts[src].balance -= tx.amount;
-    pthread_mutex_unlock(&account_mutexes[src]);
+    pthread_mutex_unlock(&mutex);
   }
   return NULL;
 }
