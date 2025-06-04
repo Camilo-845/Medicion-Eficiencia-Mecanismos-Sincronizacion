@@ -22,3 +22,46 @@ Este problema es adecuado para este análisis porque:
 - Tiene una estructura simple y fácilmente paralelizable.
 - Permite medir claramente los efectos de sincronización sin ruido externo.
 - Es fácilmente escalable en volumen y complejidad de transacciones.
+
+## Requerimientos
+
+- **Sistema operativo:** Linux (recomendado)
+- **Compilador:** GCC (GNU Compiler Collection)
+- **Herramientas:** Make (opcional, para automatizar la compilación)
+- **Librerías:** pthreads (normalmente incluida en sistemas Linux)
+
+## Instrucciones de compilación y ejecución
+
+Todos los archivos fuente se encuentran en la carpeta “src”. Puedes compilar y ejecutar cualquiera de las versiones del código (por ejemplo, “main.c”, “main_v2.c”, “main_v3.c”) de la siguiente manera.
+
+### Compilación manual con gcc
+
+Ejemplo para compilar “main.c” (o “main_v2.c”, “main_v3.c”):
+
+```bash
+gcc -o main src/main.c -lpthread
+```
+
+### Ejecución
+
+El programa se ejecuta con la sintaxis:
+
+```bash
+./<ejecutable> <archivo> <nHilos>
+```
+
+Por ejemplo, para ejecutar “main” con el archivo de prueba “c_5t_20.txt” (ubicado en la carpeta “test_files”) y 5 hilos, ejecuta:
+
+```bash
+./main test_files/c_5t_20.txt 5
+```
+
+### Compilación usando Make (opcional)
+
+Si tienes un archivo “Makefile” (generado en la raíz del proyecto), puedes compilar todas las versiones (por ejemplo, “main”, “main_v2”, “main_v3”) con:
+
+```bash
+make
+```
+
+Esto generará los ejecutables “main”, “main_v2” y “main_v3” (según el contenido de “src”). Luego, ejecuta el programa con la sintaxis “./<ejecutable> <archivo> <nHilos>” (por ejemplo, “./main test_files/c_5t_20.txt 5”).

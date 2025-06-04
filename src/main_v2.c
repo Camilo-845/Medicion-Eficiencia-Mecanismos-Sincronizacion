@@ -30,10 +30,6 @@ int findAccount(int id);
 
 int main(int argc, char *argv[]) {
   struct timeval start, end;
-  if (argc < 3) {
-    fprintf(stderr, "Uso: %s <archivo> <n_hilos>\n", argv[0]);
-    return EXIT_FAILURE;
-  }
 
   const char *filename = argv[1];
   nThreads = atoi(argv[2]);
@@ -65,7 +61,7 @@ int main(int argc, char *argv[]) {
   gettimeofday(&end, NULL);
   double elapsed =
       (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6;
-  printf("Tiempo transcurrido: %.6f segundos\n", elapsed);
+  printf("%.6f\n", elapsed);
   return EXIT_SUCCESS;
 }
 
