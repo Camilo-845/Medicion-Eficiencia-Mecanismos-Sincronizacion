@@ -1,4 +1,5 @@
 #include <pthread.h>
+#include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +21,7 @@ typedef struct {
 int nCounts, nTransactions, nThreads;
 Count *counts;
 Transaction *transactions;
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+sem_t sem;
 
 void *func_hilo(void *arg);
 void read_file(const char *filename);
@@ -37,11 +38,11 @@ int main(int argc, char *argv[]) {
   const char *filename = argv[1];
   nThreads = atoi(argv[2]);
 
-  read_file(filename);
   // print_balance();
+  read_file(filename);
   gettimeofday(&start, NULL);
 
-  pthread_mutex_init(&mutex, NULL);
+  sem_init(&sem, 0, 1);
 
   pthread_t *threads = malloc(sizeof(pthread_t) * nThreads);
   for (int i = 0; i < nThreads; i++) {
@@ -56,7 +57,7 @@ int main(int argc, char *argv[]) {
 
   // print_balance();
 
-  pthread_mutex_destroy(&mutex);
+  sem_destroy(&sem);
   free(threads);
   free(counts);
   free(transactions);
@@ -82,12 +83,12 @@ void *func_hilo(void *arg) {
     if (src == -1)
       continue;
 
-    pthread_mutex_lock(&mutex);
+    sem_wait(&sem);
     if (tx.type == DEP)
       counts[src].balance += tx.amount;
     else
       counts[src].balance -= tx.amount;
-    pthread_mutex_unlock(&mutex);
+    sem_post(&sem);
   }
   return NULL;
 }
